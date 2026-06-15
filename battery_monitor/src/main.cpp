@@ -2,6 +2,8 @@
 #include <VescUart.h>
 #include <WiFi.h>
 #include <PubSubClient.h>
+#include <cstdio>
+#include <string.h>
 
 #include "HardwareSerial.h"
 #include "WiFiType.h"
@@ -47,6 +49,9 @@ void loop(){
         Serial.printf("Voltage: %.2f V\n", vescUart.data.inpVoltage);
         Serial.printf("Current: %.2f A\n", vescUart.data.avgInputCurrent);
         Serial.printf("RPM: %d\n", vescUart.data.rpm);
+        char message[32];
+        snprintf(message, sizeof(message), "%.2f", vescUart.data.inpVoltage);
+        mqttClient.publish("/voltage", message);
     } else {
         Serial.println("Failed to read VESC");
     }
