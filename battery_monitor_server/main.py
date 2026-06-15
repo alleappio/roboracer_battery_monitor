@@ -1,30 +1,26 @@
 import paho.mqtt.client as mqtt
 import json
+from parameters import *
 
-BROKER = "localhost"
-PORT = 1883
-TOPIC = "/voltage"
+last_message = {}
 
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code:", rc)
-    client.subscribe(TOPIC)
+    client.subscribe(MQTT_WILDCARD_TOPIC)
+    print(f"subscribed to topic: {MQTT_WILDCARD_TOPIC}")
 
 def on_message(client, userdata, msg):
     payload = msg.payload.decode()
-    try:
-        data = json.loads(payload)
-        print("Received:", data)
-    except:
-        print("Received raw:", payload)
+    print(f"{msg.topic}: {payload}")
+    last_message[msg.topic] = payload
 
-client = mqtt.Client()
-client.on_connect = on_connect
-client.on_message = on_message
+def main() -> None:
+    client = mqtt.Client()
+    client.on_connect = on_connect
+    client.on_message = on_message
 
-client.connect(BROKER, PORT, 60)
-client.loop_forever()
-# def main() -> None:
-#     print("hello world")
-#
-# if __name__ == '__main__':
-#     main()
+    client.connect(BROKER_IP, BROKER_PORT, 60)
+    client.loop_forever()
+
+if __name__ == '__main__':
+    main()
