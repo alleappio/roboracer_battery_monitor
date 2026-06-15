@@ -43,13 +43,23 @@ void setup(){
 void loop(){
     mqttClient.loop();
 
-    digitalWrite(LED_BUILTIN, HIGH);
-    mqttClient.publish("/test", "On");
-    Serial.println("On");
+    if (vescUart.getVescValues()) {
+        Serial.printf("Voltage: %.2f V\n", vescUart.data.inpVoltage);
+        Serial.printf("Current: %.2f A\n", vescUart.data.avgInputCurrent);
+        Serial.printf("RPM: %d\n", vescUart.data.rpm);
+    } else {
+        Serial.println("Failed to read VESC");
+    }
+
     delay(1000);
 
-    digitalWrite(LED_BUILTIN, LOW);
-    mqttClient.publish("/test", "Off");
-    Serial.println("Off");
-    delay(1000);
+    // digitalWrite(LED_BUILTIN, HIGH);
+    // mqttClient.publish("/test", "On");
+    // Serial.println("On");
+    // delay(1000);
+    //
+    // digitalWrite(LED_BUILTIN, LOW);
+    // mqttClient.publish("/test", "Off");
+    // Serial.println("Off");
+    // delay(1000);
 }
