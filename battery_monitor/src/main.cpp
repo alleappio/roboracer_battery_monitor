@@ -32,6 +32,15 @@ void setupMqtt(){
     Serial.println("connected to mqtt");
 }
 
+void sendMessage(char* value_string, float value){
+    char message[32];
+    char topic[32];
+    snprintf(message, sizeof(message), "%.2f", value);
+    snprintf(topic, sizeof(topic), "/%s/%s", mqttId, value_string);
+    Serial.printf("%s: %s", topic, message);
+    mqttClient.publish(topic, message);
+}
+
 void setup(){
     Serial.begin(115200);
     Serial.println("helloooo");
@@ -46,25 +55,17 @@ void loop(){
     mqttClient.loop();
 
     if (vescUart.getVescValues()) {
-        Serial.printf("Voltage: %.2f V\n", vescUart.data.inpVoltage);
-        Serial.printf("Current: %.2f A\n", vescUart.data.avgInputCurrent);
-        Serial.printf("RPM: %d\n", vescUart.data.rpm);
-        char message[32];
-        snprintf(message, sizeof(message), "%.2f", vescUart.data.inpVoltage);
-        mqttClient.publish("/voltage", message);
+        sendMessage("voltage", vescUart.data.inpVoltage);
+        sendMessage("current", vescUart.data.avgInputCurrent);
+        sendMessage("rpm", vescUart.data.rpm);
+        sendMessage("avgMotorCurrent", vescUart.data.avgMotorCurrent);
+        sendMessage("ampHours", vescUart.data.ampHours);
+        sendMessage("wattHours", vescUart.data.wattHours);
+        sendMessage("tachometer", vescUart.data.tachometer);
+        sendMessage("tempMotor", vescUart.data.tempMotor);
     } else {
         Serial.println("Failed to read VESC");
     }
 
-    delay(1000);
-
-    // digitalWrite(LED_BUILTIN, HIGH);
-    // mqttClient.publish("/test", "On");
-    // Serial.println("On");
-    // delay(1000);
-    //
-    // digitalWrite(LED_BUILTIN, LOW);
-    // mqttClient.publish("/test", "Off");
-    // Serial.println("Off");
     // delay(1000);
 }
