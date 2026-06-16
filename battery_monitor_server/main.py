@@ -2,7 +2,7 @@ from PyQt6.QtWidgets import QApplication
 import json
 from parameters import *
 from mqttClient import MqttClient
-from dashboard import Dashboard
+from dashboard.dashboard import Dashboard
 import sys
 import uvicorn
 from fastapi import FastAPI
@@ -13,10 +13,9 @@ def run_webapp(app):
     uvicorn.run(app, host="0.0.0.0", port=8000)
 
 def main() -> None:
-    app = FastAPI()
     telemetry = Telemetry()
-    dashboard = Dashboard(app, telemetry)
-    threading.Thread(target=run_webapp, args=(app,)).start()
+    dashboard = Dashboard(telemetry)
+    threading.Thread(target = run_webapp, args = (dashboard.app,), daemon = True).start()
     mqtt_client = MqttClient(BROKER_IP, BROKER_PORT, MQTT_ID, MQTT_WILDCARD_TOPIC, telemetry)
 
 

@@ -1,3 +1,5 @@
+from threading import Lock
+
 class Telemetry:
     def __init__(self):
         self.received_value = {
@@ -23,19 +25,23 @@ class Telemetry:
         }
         
         self.stable_data = dict(self.data)
+        self.lock = Lock()
     
     def update(self, value_name, value):
         self.data[value_name] = value
-        self.received_value[value_name] = True
-        all_received_flag = True
-        for i in self.received_value:
-            if self.received_value[i] == False:
-                all_received_flag = False
-
-        if all_received_flag:
+        with self.lock:
+            self.received_value[value_name] = True
+            all_received_flag = True
             for i in self.received_value:
-                self.received_value[i] = False
-                self.stable_data[i] = self.data[i]
+                if self.received_value[i] == False:
+                    all_received_flag = False
+
+            if all_received_flag:
+                for i in self.received_value:
+                    self.received_value[i] = False
+                    self.stable_data[i] = self.data[i]
 
     def read(self):
-        return dict(self.stable_data)
+        with self.lock:
+            snapshot = dict(self.stable_data)
+        return snapshot
