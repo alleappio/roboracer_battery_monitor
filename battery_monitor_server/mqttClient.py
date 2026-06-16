@@ -1,19 +1,11 @@
 import paho.mqtt.client as mqtt
+from telemetry import Telemetry
 
 class MqttClient:
     last_message = {}
     received_value = {}
-    def __init__(self, ip, port, id, wildcard):
-        self.received_value = {
-            "voltage": False,
-            "current": False,
-            "rpm": False,
-            "avgMotorCurrent": False,
-            "ampHours": False,
-            "wattHours": False,
-            "tachometer": False,
-            "tempMotor": False,
-        }
+    def __init__(self, ip, port, id, wildcard, telemetry):
+        self.telemetry = telemetry
 
         self.ip = ip
         self.port = port
@@ -37,21 +29,9 @@ class MqttClient:
 
     def process_message(self, topic, message):
         splitted = topic.split("/")
-        namespaces = splitted[:len(splitted)-2]
         value_name = splitted[-1]
         self.last_message[value_name] = message
-        self.received_value[value_name] = True
-        all_received_flag = True
-        for i in self.received_value:
-            if self.received_value[i] == False:
-                all_received_flag = False
-
-        if all_received_flag:
-            print("{")
-            for i in self.received_value:
-                self.received_value[i] = False
-                print(f"{i}: {self.last_message[i]}")
-            print("}")
+        self.telemetry.update(value_name, float(message))
 
     def get_last_message(self, value_name):
         return self.last_message.get(value_name, None)
