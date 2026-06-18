@@ -20,6 +20,10 @@ class Dashboard:
                 html_content = f.read()
             return HTMLResponse(content=html_content, status_code=200)
 
-        @self.app.get("/api/telemetry")
+        @self.app.get("/api/telemetry/smooth")
         def get_telemetry():
             return json.dumps(self.telemetry.read())
+
+        @self.app.get("/api/telemetry/raw")
+        def get_telemetry():
+            return json.dumps(self.telemetry.read_raw())

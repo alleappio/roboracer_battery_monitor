@@ -67,3 +67,20 @@ h1 {
         min-width: 90%;
     }
 }
+
+.labels {
+    width: 100%;
+    display: flex;
+    justify-content: flex-begin;
+    padding: 0.75rem 1rem;
+    box-sizing: border-box;
+}
+
+#currentVoltage {
+    text-align: left;
+    font-size: 1rem;
+    color: #e0e0e0;
+    background: rgba(255, 255, 255, 0.04);
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+}

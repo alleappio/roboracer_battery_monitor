@@ -2,7 +2,7 @@ from threading import Lock
 from collections import deque
 
 class Telemetry:
-    def __init__(self, window_size = 5, weight_old = 0.0, weight_new = 1.0):
+    def __init__(self, window_size = 5, weight_old = 0.2, weight_new = 0.8):
         self.window_size = window_size
         self.weight_new = weight_new
         self.weight_old = weight_old

@@ -1,7 +1,9 @@
-const voltageData = [];
-const currentData = [];
+const voltageDataSmooth = [];
+const voltageDataRaw = [];
+const currentDataSmooth = [];
+const currentDataRaw = [];
 const labels = [];
-const MAX_POINTS = 50;
+const MAX_POINTS = 25;
 
 const chartOptions = {
     animation: false,
@@ -18,7 +20,12 @@ const chartOptions = {
         }
     },
     plugins: {
-        legend: { display: false }
+        legend: {
+            display: true,
+            labels: {
+                color: '#e0e0e0'
+            }
+        }
     }
 };
 
@@ -27,15 +34,28 @@ const voltageChart = new Chart(voltageCtx, {
     type: "line",
     data: {
         labels: labels,
-        datasets: [{
-            label: "Voltage (V)",
-            data: voltageData,
-            borderColor: "#03dac6",
-            backgroundColor: "rgba(3, 218, 198, 0.1)",
-            fill: true,
-            tension: 0.4,
-            pointRadius: 0
-        }]
+        datasets: [
+            {
+                label: "Voltage Smooth",
+                data: voltageDataSmooth,
+                borderColor: "#03dac6",
+                backgroundColor: "rgba(3, 218, 198, 0.0)",
+                fill: false,
+                tension: 0.4,
+                pointRadius: 0,
+                borderWidth: 3,
+            },
+            {
+                label: "Voltage Raw",
+                data: voltageDataRaw,
+                borderColor: "#bb86fc",
+                backgroundColor: "rgba(187, 134, 252, 0.0)",
+                fill: false,
+                tension: 0.4,
+                pointRadius: 0,
+                borderWidth: 1,
+            }
+        ]
     },
     options: chartOptions
 });
@@ -45,42 +65,67 @@ const currentChart = new Chart(currentCtx, {
     type: "line",
     data: {
         labels: labels,
-        datasets: [{
-            label: "Current (A)",
-            data: currentData,
-            borderColor: "#cf6679",
-            backgroundColor: "rgba(207, 102, 121, 0.1)",
-            fill: true,
-            tension: 0.4,
-            pointRadius: 0
-        }]
+        datasets: [
+            {
+                label: "Current Smooth",
+                data: currentDataSmooth,
+                borderColor: "#cf6679",
+                backgroundColor: "rgba(207, 102, 121, 0.0)",
+                fill: false,
+                tension: 0.4,
+                pointRadius: 0,
+                borderWidth: 3,
+            },
+            {
+                label: "Current Raw",
+                data: currentDataRaw,
+                borderColor: "#ffd54f",
+                backgroundColor: "rgba(255, 213, 79, 0.0)",
+                fill: false,
+                tension: 0.4,
+                pointRadius: 0,
+                borderWidth: 1,
+            }
+        ]
     },
     options: chartOptions
 });
 
+function parseMaybeString(data) {
+    return typeof data === 'string' ? JSON.parse(data) : data;
+}
+
+const currentVoltageLabel = document.getElementById("currentVoltage");
+
 async function update() {
     try {
-        const res = await fetch("/api/telemetry");
-        let data = await res.json();
-        // The backend might return a double-encoded JSON or a simple object depending on implementation
-        // dashboard.py does json.dumps(self.telemetry.read()), which FastAPI might double encode if returned as a string.
-        // Let's handle both.
-        if (typeof data === 'string') {
-            data = JSON.parse(data);
-        }
+        const [resSmooth, resRaw] = await Promise.all([
+            fetch("/api/telemetry/smooth"),
+            fetch("/api/telemetry/raw")
+        ]);
+
+        let smooth = parseMaybeString(await resSmooth.json());
+        let raw = parseMaybeString(await resRaw.json());
 
         const now = new Date().toLocaleTimeString();
 
-        // push new values
-        voltageData.push(data.voltage);
-        currentData.push(data.current);
         labels.push(now);
+        voltageDataSmooth.push(smooth.voltage);
+        voltageDataRaw.push(raw.voltage);
+        currentDataSmooth.push(smooth.current);
+        currentDataRaw.push(raw.current);
 
-        // keep last N points
-        if (voltageData.length > MAX_POINTS) {
-            voltageData.shift();
-            currentData.shift();
+        if (currentVoltageLabel) {
+            currentVoltageLabel.textContent =
+                `Current smooth voltage: ${smooth.voltage.toFixed(2)} V`;
+        }
+
+        if (labels.length > MAX_POINTS) {
             labels.shift();
+            voltageDataSmooth.shift();
+            voltageDataRaw.shift();
+            currentDataSmooth.shift();
+            currentDataRaw.shift();
         }
 
         voltageChart.update();
