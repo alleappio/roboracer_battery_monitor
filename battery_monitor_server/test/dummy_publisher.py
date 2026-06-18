@@ -19,14 +19,22 @@ client.connect(BROKER, PORT, 60)
 # FIELDS (come nel tuo ESP32)
 # ======================
 fields = [
+    "dutyCycleNow",
+    "wattHoursCharged",
+    "tachometerAbs",
+    "tempMosfet",
+    "pidPos",
+    "id",
+    "error",
     "voltage",
     "current",
     "rpm",
     "avgMotorCurrent",
     "ampHours",
+    "ampHoursCharged",
     "wattHours",
     "tachometer",
-    "tempMotor"
+    "tempMotor",
 ]
 
 # ======================

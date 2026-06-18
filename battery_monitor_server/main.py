@@ -13,10 +13,21 @@ def run_webapp(app):
     uvicorn.run(app, host="0.0.0.0", port=8000)
 
 def main() -> None:
-    telemetry = Telemetry()
+    telemetry = Telemetry(new_measure_weight=NEW_MEASURE_WEIGHT,
+                          nominal_battery_amps=NOMINAL_BATTERY_AMPS,
+                          nominal_battery_volts=NOMINAL_BATTERY_VOLTAGE)
+
     dashboard = Dashboard(telemetry)
-    threading.Thread(target = run_webapp, args = (dashboard.app,), daemon = True).start()
-    mqtt_client = MqttClient(BROKER_IP, BROKER_PORT, MQTT_ID, MQTT_WILDCARD_TOPIC, telemetry)
+
+    threading.Thread(target = run_webapp,
+                     args = (dashboard.app,),
+                     daemon = True).start()
+
+    mqtt_client = MqttClient(BROKER_IP,
+                             BROKER_PORT,
+                             MQTT_ID,
+                             MQTT_WILDCARD_TOPIC,
+                             telemetry)
 
 
 if __name__ == '__main__':
