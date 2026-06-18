@@ -55,11 +55,19 @@ void loop(){
     mqttClient.loop();
 
     if (vescUart.getVescValues()) {
+        sendMessage("dutyCycleNow", vescUart.data.dutyCycleNow);
+        sendMessage("wattHoursCharged", vescUart.data.wattHoursCharged);
+        sendMessage("tachometerAbs", vescUart.data.tachometerAbs);
+        sendMessage("tempMosfet", vescUart.data.tempMosfet);
+        sendMessage("pidPos", vescUart.data.pidPos);
+        sendMessage("id", vescUart.data.id);
+        sendMessage("error", vescUart.data.error); 
         sendMessage("voltage", vescUart.data.inpVoltage);
         sendMessage("current", vescUart.data.avgInputCurrent);
         sendMessage("rpm", vescUart.data.rpm);
         sendMessage("avgMotorCurrent", vescUart.data.avgMotorCurrent);
         sendMessage("ampHours", vescUart.data.ampHours);
+        sendMessage("ampHoursCharged", vescUart.data.ampHoursCharged);
         sendMessage("wattHours", vescUart.data.wattHours);
         sendMessage("tachometer", vescUart.data.tachometer);
         sendMessage("tempMotor", vescUart.data.tempMotor);
