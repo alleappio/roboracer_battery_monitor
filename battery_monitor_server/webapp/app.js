@@ -96,6 +96,8 @@ function parseMaybeString(data) {
 }
 
 const currentVoltageLabel = document.getElementById("currentVoltage");
+const capacityLeftLabel = document.getElementById("capacityLeft");
+const timeLeftLabel = document.getElementById("timeLeft");
 
 async function update() {
     try {
@@ -115,10 +117,9 @@ async function update() {
         currentDataSmooth.push(smooth.current);
         currentDataRaw.push(raw.current);
 
-        if (currentVoltageLabel) {
-            currentVoltageLabel.textContent =
-                `Current smooth voltage: ${smooth.voltage.toFixed(2)} V`;
-        }
+        currentVoltageLabel.textContent = `Current smooth voltage: ${smooth.voltage.toFixed(2)} V`;
+        capacityLeftLabel.textContent = `Capacity left: ${smooth.remainingCapacity.toFixed(2)} A/h`;
+        timeLeftLabel.textContent = `Time left: ${smooth.remainingTime.toFixed(2)} `;
 
         if (labels.length > MAX_POINTS) {
             labels.shift();

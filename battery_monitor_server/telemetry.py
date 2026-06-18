@@ -67,8 +67,6 @@ class Telemetry:
             self.received_value[value_name] = True
             all_received_flag = all(self.received_value.values())
 
-            print(all_received_flag)
-            print(self.received_value)
             if all_received_flag:
                 for i in self.received_value:
                     self.received_value[i] = False

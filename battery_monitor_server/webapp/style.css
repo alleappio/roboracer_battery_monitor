@@ -70,17 +70,18 @@ h1 {
 
 .labels {
     width: 100%;
-    display: flex;
+    display: block;
     justify-content: flex-begin;
     padding: 0.75rem 1rem;
+    margin-top: 1rem;
     box-sizing: border-box;
+    background: rgba(255, 255, 255, 0.04);
 }
 
-#currentVoltage {
+.label {
     text-align: left;
     font-size: 1rem;
     color: #e0e0e0;
-    background: rgba(255, 255, 255, 0.04);
     padding: 0.5rem 0.75rem;
     border-radius: 8px;
 }
