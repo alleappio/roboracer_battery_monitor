@@ -1,4 +1,3 @@
-from PyQt6.QtWidgets import QApplication
 import json
 from parameters import *
 from mqttClient import MqttClient
@@ -10,7 +9,7 @@ import threading
 from telemetry import Telemetry
 
 def run_webapp(app):
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8000, log_level="warning")
 
 def main() -> None:
     telemetry = Telemetry(new_measure_weight=NEW_MEASURE_WEIGHT,
