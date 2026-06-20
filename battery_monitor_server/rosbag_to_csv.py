@@ -27,6 +27,10 @@ def main():
 
         with open(output_csv, "w", newline="") as csvfile:
             first = True
+            messages_num = sum(
+                1 for _ in reader.iter_decoded_messages(topics=[topic_name])
+            )
+            count = 0
             for schema, channel, message, ros_msg in reader.iter_decoded_messages(
                 topics=[topic_name]
             ):
@@ -56,6 +60,8 @@ def main():
                     first = False
                 writer.writerow(data[i] for i in data)
 
+                count+=1
+                print(f"written: {count}/{messages_num}", end="\r")
     print(f"CSV written to: {output_csv}")
 
 
