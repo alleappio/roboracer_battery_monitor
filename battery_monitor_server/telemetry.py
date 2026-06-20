@@ -79,9 +79,9 @@ class Telemetry:
                 self.stable_data["remainingCapacity"] = self.get_remaining_capacity()
                 self.stable_data["remainingTime"] = self.get_remaining_time()
                 self.stable_data["estimateTempMotor"] = self.get_motor_temperature()
-                self.stable_data["state_of_charge"] = self.get_state_of_charge()
-                self.stable_data["low_power_alert"] = self.get_low_power_alert()
-                self.stable_data["measure_time"] = time.time()
+                self.stable_data["stateOfCharge"] = self.get_state_of_charge()
+                self.stable_data["lowPowerAlert"] = self.get_low_power_alert()
+                self.stable_data["measureTime"] = time.time()
 
     def get_remaining_capacity(self):
         juice_left = self.nominal_battery_amps - (self.stable_data["ampHours"] - self.stable_data["ampHoursCharged"])
@@ -111,7 +111,7 @@ class Telemetry:
         return soc
 
     def get_low_power_alert(self):
-        return self.stable_data["state_of_charge"] <= 20 or self.stable_data["remainingTime"] <= 3.0
+        return self.stable_data["stateOfCharge"] <= 20 or self.stable_data["remainingTime"] <= 3.0
 
     def read(self):
         with self.lock:
