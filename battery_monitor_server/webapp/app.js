@@ -98,6 +98,8 @@ function parseMaybeString(data) {
 const currentVoltageLabel = document.getElementById("currentVoltage");
 const capacityLeftLabel = document.getElementById("capacityLeft");
 const timeLeftLabel = document.getElementById("timeLeft");
+// const stateOfChargeLabel = document.getElementById("stateOfCharge");
+const stateOfChargeValue = document.getElementById("stateOfChargeValue");
 
 async function update() {
     try {
@@ -120,6 +122,14 @@ async function update() {
         currentVoltageLabel.textContent = `Current smooth voltage: ${smooth.voltage.toFixed(2)} V`;
         capacityLeftLabel.textContent = `Capacity left: ${smooth.remainingCapacity.toFixed(2)} A/h`;
         timeLeftLabel.textContent = `Time left: ${smooth.remainingTime.toFixed(2)} `;
+
+        let lowPowerAlert = smooth.lowPowerAlert
+
+        stateOfChargeValue.textContent = smooth.stateOfCharge.toFixed(2);
+
+        stateOfChargeValue.style.color = lowPowerAlert ? "#cf6679" : "#4caf50";
+
+        // stateOfChargeLabel.textContent = `State of charge: ${smooth.stateOfCharge.toFixed(2)} `;
 
         if (labels.length > MAX_POINTS) {
             labels.shift();
