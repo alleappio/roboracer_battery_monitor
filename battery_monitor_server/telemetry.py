@@ -60,12 +60,11 @@ class Telemetry:
     def update(self, value_name, value):
         with self.lock:
             self.data[value_name] = value
-            # self.history[value_name].append(value)
+            self.history[value_name].append(value)
 
             # implement a moving average to smooth
             # self.smoothed_data[value_name] = sum(self.history[value_name]) / len(self.history[value_name])
-            self.smoothed_data[value_name] = self.smoothed_data[value_name] * self.weight_old + self.data[value_name] * self.weight_new / (self.weight_old+self.weight_new)
-
+            self.smoothed_data[value_name] = self.smoothed_data[value_name] * self.weight_old + self.data[value_name] * self.weight_new
 
             self.received_value[value_name] = True
             all_received_flag = all(self.received_value.values())
@@ -75,10 +74,14 @@ class Telemetry:
                     self.received_value[i] = False
                     self.stable_raw_data[i] = self.data[i]
                     self.stable_data[i] = self.smoothed_data[i]
-                    self.stable_data["remainingCapacity"] = self.get_remaining_capacity()
-                    self.stable_data["remainingTime"] = self.get_remaining_time()
-                    self.stable_data["estimateTempMotor"] = self.get_motor_temperature()
-                    self.stable_data["measure_time"] = time.time()
+                
+                # calculate interesting data
+                self.stable_data["remainingCapacity"] = self.get_remaining_capacity()
+                self.stable_data["remainingTime"] = self.get_remaining_time()
+                self.stable_data["estimateTempMotor"] = self.get_motor_temperature()
+                self.stable_data["state_of_charge"] = self.get_state_of_charge()
+                self.stable_data["low_power_alert"] = self.get_low_power_alert()
+                self.stable_data["measure_time"] = time.time()
 
     def get_remaining_capacity(self):
         juice_left = self.nominal_battery_amps - (self.stable_data["ampHours"] - self.stable_data["ampHoursCharged"])
@@ -86,7 +89,7 @@ class Telemetry:
 
     def get_remaining_time(self):
         time_left_in_hours = self.stable_data["remainingCapacity"]/max(self.stable_data["current"], 0.0000000000001)
-        time_left_in_minutes = time_left_in_hours/60
+        time_left_in_minutes = time_left_in_hours*60
         return time_left_in_minutes
 
     def get_motor_temperature(self):
@@ -101,6 +104,14 @@ class Telemetry:
         heat_out = (self.stable_data["estimateTempMotor"] - t_ambient) * cooling_factor
         delta_temp = ((heat_in - heat_out) / c_thermal) * delta_t
         return self.stable_data["estimateTempMotor"] + delta_temp
+
+    def get_state_of_charge(self):
+        net_amp_hours_used = self.stable_data["ampHours"] - self.stable_data["ampHoursCharged"]
+        soc = (1.0 - (net_amp_hours_used / 5.0)) * 100.0
+        return soc
+
+    def get_low_power_alert(self):
+        return self.stable_data["state_of_charge"] <= 20 or self.stable_data["remainingTime"] <= 3.0
 
     def read(self):
         with self.lock:
