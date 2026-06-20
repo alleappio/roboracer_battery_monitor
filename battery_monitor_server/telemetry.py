@@ -1,5 +1,6 @@
 from threading import Lock
 from collections import deque
+import time
 
 class Telemetry:
     def __init__(self, window_size = 5, new_measure_weight = 0.8, nominal_battery_amps = 5.0, nominal_battery_volts = 11.1):
@@ -44,6 +45,7 @@ class Telemetry:
             "wattHours": 0.0,
             "tachometer": 0.0,
             "tempMotor": 0.0,
+            "estimateTempMotor": 0.0,
         }
         
         self.history = {
@@ -51,6 +53,7 @@ class Telemetry:
         }
         self.smoothed_data = dict(self.data)
         self.stable_data = dict(self.data)
+        self.stable_data["measure_time"] = time.time()
         self.stable_raw_data = dict(self.data)
         self.lock = Lock()
     
@@ -74,6 +77,8 @@ class Telemetry:
                     self.stable_data[i] = self.smoothed_data[i]
                     self.stable_data["remainingCapacity"] = self.get_remaining_capacity()
                     self.stable_data["remainingTime"] = self.get_remaining_time()
+                    self.stable_data["estimateTempMotor"] = self.get_motor_temperature()
+                    self.stable_data["measure_time"] = time.time()
 
     def get_remaining_capacity(self):
         juice_left = self.nominal_battery_amps - (self.stable_data["ampHours"] - self.stable_data["ampHoursCharged"])
@@ -83,6 +88,19 @@ class Telemetry:
         time_left_in_hours = self.stable_data["remainingCapacity"]/max(self.stable_data["current"], 0.0000000000001)
         time_left_in_minutes = time_left_in_hours/60
         return time_left_in_minutes
+
+    def get_motor_temperature(self):
+        r_phase = 0.008       # Internal copper resistance (~8 mOhms)
+        c_thermal = 180.0     # Scaled for a 262g metal mass motor
+        h_0 = 0.08            # Stationary thermal dissipation factor
+        h_1 = 0.00003         # Air dissipation factor (scales up linearly toward 50k RPM)
+        t_ambient = 25        # °C
+        delta_t = time.time() - self.stable_data["measure_time"]
+        heat_in = self.stable_data["avgMotorCurrent"]**2 *r_phase
+        cooling_factor = h_0 + (h_1 * self.stable_data["rpm"])
+        heat_out = (self.stable_data["estimateTempMotor"] - t_ambient) * cooling_factor
+        delta_temp = ((heat_in - heat_out) / c_thermal) * delta_t
+        return self.stable_data["estimateTempMotor"] + delta_temp
 
     def read(self):
         with self.lock:
