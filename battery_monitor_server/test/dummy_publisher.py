@@ -56,7 +56,7 @@ while True:
         else:
             value = random.uniform(0.0, 100.0)
 
-        topic = f"/{MQTT_ID}/{field}"
+        topic = f"{MQTT_ID}/{field}"
         message = f"{value:.2f}"
 
         client.publish(topic, message)

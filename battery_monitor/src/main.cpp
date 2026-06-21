@@ -36,7 +36,7 @@ void sendMessage(char* value_string, float value){
     char message[32];
     char topic[32];
     snprintf(message, sizeof(message), "%.2f", value);
-    snprintf(topic, sizeof(topic), "/%s/%s", Params::mqttId, value_string);
+    snprintf(topic, sizeof(topic), "%s/%s", Params::mqttId, value_string);
     Serial.printf("%s: %s", topic, message);
     mqttClient.publish(topic, message);
 }
