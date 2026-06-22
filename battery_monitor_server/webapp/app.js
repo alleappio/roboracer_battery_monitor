@@ -3,7 +3,7 @@ const voltageDataRaw = [];
 const currentDataSmooth = [];
 const currentDataRaw = [];
 const labels = [];
-const MAX_POINTS = 25;
+const MAX_POINTS = 50;
 
 const chartOptions = {
     animation: false,
@@ -114,10 +114,10 @@ async function update() {
         const now = new Date().toLocaleTimeString();
 
         labels.push(now);
-        voltageDataSmooth.push(smooth.voltage);
-        voltageDataRaw.push(raw.voltage);
-        currentDataSmooth.push(smooth.current);
-        currentDataRaw.push(raw.current);
+        voltageDataSmooth.push(smooth.voltage.toFixed(2));
+        voltageDataRaw.push(raw.voltage.toFixed(2));
+        currentDataSmooth.push(smooth.current.toFixed(2));
+        currentDataRaw.push(raw.current.toFixed(2));
 
         currentVoltageLabel.textContent = `Current smooth voltage: ${smooth.voltage.toFixed(2)} V`;
         capacityLeftLabel.textContent = `Capacity left: ${smooth.remainingCapacity.toFixed(2)} A/h`;
@@ -146,5 +146,5 @@ async function update() {
     }
 }
 
-setInterval(update, 500);
+setInterval(update, 50);
 update();
