@@ -89,6 +89,8 @@ class Telemetry:
         return juice_left
 
     def get_remaining_time(self):
+        if(self.stable_data["current"]<0.00001):
+            return self.stable_data["remainingTime"]
         time_left_in_hours = self.stable_data["remainingCapacity"]/max(self.stable_data["current"], 0.0000000000001)
         time_left_in_minutes = time_left_in_hours*60
         return time_left_in_minutes
