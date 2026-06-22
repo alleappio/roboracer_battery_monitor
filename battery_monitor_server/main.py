@@ -14,7 +14,8 @@ def run_webapp(app):
 def main() -> None:
     telemetry = Telemetry(new_measure_weight=NEW_MEASURE_WEIGHT,
                           nominal_battery_amps=NOMINAL_BATTERY_AMPS,
-                          nominal_battery_volts=NOMINAL_BATTERY_VOLTAGE)
+                          nominal_battery_volts=NOMINAL_BATTERY_VOLTAGE,
+                          battery_max_voltage=MAXIMUM_BATTERY_VOLTAGE)
 
     dashboard = Dashboard(telemetry)
 
