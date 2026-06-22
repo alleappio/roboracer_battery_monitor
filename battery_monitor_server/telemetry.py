@@ -84,7 +84,8 @@ class Telemetry:
                 self.stable_data["measureTime"] = time.time()
 
     def get_remaining_capacity(self):
-        juice_left = self.nominal_battery_amps - (self.stable_data["ampHours"] - self.stable_data["ampHoursCharged"])
+        used_ah = self.stable_data["ampHours"] - self.stable_data["ampHoursCharged"]
+        juice_left = self.nominal_battery_amps - used_ah
         return juice_left
 
     def get_remaining_time(self):
