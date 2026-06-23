@@ -56,7 +56,7 @@ class Telemetry:
         }
         self.smoothed_data = dict(self.data)
         self.stable_data = dict(self.data)
-        self.stable_data["measure_time"] = time.time()
+        self.stable_data["measureTime"] = time.time()
         self.stable_raw_data = dict(self.data)
         self.lock = Lock()
     
@@ -84,6 +84,7 @@ class Telemetry:
                 self.stable_data["estimateTempMotor"] = self.get_motor_temperature()
                 self.stable_data["stateOfCharge"] = self.get_state_of_charge()
                 self.stable_data["lowPowerAlert"] = self.get_low_power_alert()
+                print(f"delta t = {(time.time() - self.stable_data["measureTime"])*1000} ms")
                 self.stable_data["measureTime"] = time.time()
 
     def get_remaining_capacity(self):
@@ -104,7 +105,7 @@ class Telemetry:
         h_0 = 0.08            # Stationary thermal dissipation factor
         h_1 = 0.00003         # Air dissipation factor (scales up linearly toward 50k RPM)
         t_ambient = 25        # °C
-        delta_t = time.time() - self.stable_data["measure_time"]
+        delta_t = time.time() - self.stable_data["measureTime"]
         heat_in = self.stable_data["avgMotorCurrent"]**2 *r_phase
         cooling_factor = h_0 + (h_1 * self.stable_data["rpm"])
         heat_out = (self.stable_data["estimateTempMotor"] - t_ambient) * cooling_factor
@@ -114,7 +115,7 @@ class Telemetry:
     def get_state_of_charge(self):
     # def update_state_of_charge(self, voltage=None, current=None, timestamp=None):
         now = time.time()
-        dt_hours = max(0.0, now - getattr(self, "last_soc_update_time", self.stable_data["measure_time"])) / 3600.0
+        dt_hours = max(0.0, now - getattr(self, "last_soc_update_time", self.stable_data["measureTime"])) / 3600.0
 
         if dt_hours > 0 and self.stable_data["current"] is not None and self.nominal_battery_amps > 0:
             # Assumes positive current = discharge, negative current = charge.
