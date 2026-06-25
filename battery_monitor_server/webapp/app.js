@@ -121,7 +121,12 @@ async function update() {
 
         currentVoltageLabel.textContent = `Current smooth voltage: ${smooth.voltage.toFixed(2)} V`;
         capacityLeftLabel.textContent = `Capacity left: ${smooth.remainingCapacity.toFixed(2)} A/h`;
-        timeLeftLabel.textContent = `Time left: ${smooth.remainingTime.toFixed(2)} `;
+        // timeLeftLabel.textContent = `Time left: ${smooth.remainingTime.toFixed(2)} `;
+        // convert seconds to hours and minutes and seconds
+        const hours = Math.floor(smooth.remainingTime / 3600);
+        const minutes = Math.floor((smooth.remainingTime % 3600) / 60);
+        const seconds = Math.floor((smooth.remainingTime % 60));
+        timeLeftLabel.textContent = `Time left: ${hours}h ${minutes}m ${seconds}s`;
 
         let lowPowerAlert = smooth.lowPowerAlert
 
