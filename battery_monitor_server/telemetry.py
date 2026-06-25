@@ -93,11 +93,11 @@ class Telemetry:
         return juice_left
 
     def get_remaining_time(self):
-        if(self.stable_data["current"]<0.00001):
+        if(self.stable_data["current"]<0.05):
             return self.stable_data["remainingTime"]
-        time_left_in_hours = self.stable_data["remainingCapacity"]/max(self.stable_data["current"], 0.0000000000001)
-        time_left_in_minutes = time_left_in_hours*60
-        return time_left_in_minutes
+        time_left_in_hours = self.stable_data["remainingCapacity"]/max(self.stable_data["current"], 0.05)
+        time_left_in_seconds = self.stable_data["remainingTime"]*self.weight_old + (time_left_in_hours*60*60)*self.weight_new
+        return time_left_in_seconds
 
     def get_motor_temperature(self):
         r_phase = 0.008       # Internal copper resistance (~8 mOhms)
