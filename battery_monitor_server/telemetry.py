@@ -154,7 +154,7 @@ class Telemetry:
         return max(0.0, min(100.0, soc))
 
     def get_low_power_alert(self):
-        return self.stable_data["stateOfCharge"] <= 20 or self.stable_data["remainingTime"] <= 3.0
+        return self.stable_data["stateOfCharge"] <= 20 or self.stable_data["remainingTime"] <= 120.0
 
     def read(self):
         with self.lock:
