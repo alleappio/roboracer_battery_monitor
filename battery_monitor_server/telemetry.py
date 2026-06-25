@@ -79,12 +79,12 @@ class Telemetry:
                     self.stable_data[i] = self.smoothed_data[i]
                 
                 # calculate interesting data
-                self.stable_data["remainingCapacity"] = self.get_remaining_capacity()
-                self.stable_data["remainingTime"] = self.get_remaining_time()
-                self.stable_data["estimateTempMotor"] = self.get_motor_temperature()
-                self.stable_data["stateOfCharge"] = self.get_state_of_charge()
+                self.stable_data["remainingCapacity"] = self.get_remaining_capacity() # A/h
+                self.stable_data["remainingTime"] = self.get_remaining_time() # seconds
+                self.stable_data["estimateTempMotor"] = self.get_motor_temperature() # °C
+                self.stable_data["stateOfCharge"] = self.get_state_of_charge() # %
                 self.stable_data["lowPowerAlert"] = self.get_low_power_alert()
-                print(f"delta t = {(time.time() - self.stable_data["measureTime"])*1000} ms")
+                # print(f"delta t = {(time.time() - self.stable_data["measureTime"])*1000} ms")
                 self.stable_data["measureTime"] = time.time()
 
     def get_remaining_capacity(self):
