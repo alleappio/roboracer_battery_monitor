@@ -1,0 +1,25 @@
+services:
+  mqtt:
+    image: eclipse-mosquitto:2
+    restart: unless-stopped
+    ports:
+      - "1883:1883"
+    command: mosquitto -c /mosquitto-no-auth.conf
+
+  server:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      mqtt:
+        condition: service_started
+    ports:
+      - "8000:8000"
+    environment:
+      BROKER_IP: mqtt
+      BROKER_PORT: "1883"
+      MQTT_ID: server
+      MQTT_WILDCARD_TOPIC: ${MQTT_WILDCARD_TOPIC:-squeaky/#}
+      NEW_MEASURE_WEIGHT: ${NEW_MEASURE_WEIGHT:-0.5}
+      NOMINAL_BATTERY_AMPS: ${NOMINAL_BATTERY_AMPS:-5.0}
+      NOMINAL_BATTERY_VOLTAGE: ${NOMINAL_BATTERY_VOLTAGE:-11.1}
+      MAXIMUM_BATTERY_VOLTAGE: ${MAXIMUM_BATTERY_VOLTAGE:-12.6}
