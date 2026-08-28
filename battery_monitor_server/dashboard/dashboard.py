@@ -14,6 +14,11 @@ class Dashboard:
 
     def setup_routes(self):
         self.app.mount("/static", StaticFiles(directory="webapp"), name="static")
+
+        @self.app.get("/health")
+        def health():
+            return {"status": "ok"}
+
         @self.app.get("/")
         def read_root():
             with open("webapp/index.html", "r") as f:
