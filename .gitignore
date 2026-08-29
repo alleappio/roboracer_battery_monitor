@@ -1,1 +1,2 @@
 *.txt
+!battery_monitor_server/requirements-dev.txt
