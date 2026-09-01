@@ -7,6 +7,7 @@ on:
       - ".github/workflows/server.yml"
   push:
     branches: [main]
+    tags: [v*.*.*]
     paths:
       - "battery_monitor_server/**"
       - ".github/workflows/server.yml"
@@ -36,7 +37,7 @@ jobs:
 
   publish:
     name: Publish image
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/'))
     needs: test
     runs-on: ubuntu-latest
     permissions:
@@ -55,6 +56,8 @@ jobs:
         with:
           images: ${{ env.IMAGE_NAME }}
           tags: |
+            type=semver,pattern={{version}} # Genera il tag es: 1.0.0
+            type=semver,pattern={{major}}.{{minor}} # Genera il tag es: 1.0
             type=sha
             type=raw,value=latest
       - uses: docker/build-push-action@v6
